@@ -5,6 +5,8 @@ import { Horario } from "./components/Horario/Horario"
 import { ListaEmpleados } from "./components/ListaEmpleados"
 import { EMPLEADOS, ESTADOS, HORAS, LICENCIAS_PERMISOS, TURNOS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
+import { calcularNuevoRangoHoras } from "./helpers"
+import { toast } from "./hooks/use-toast"
 
 function App() {
 	const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<TEmpleado[]>([])
@@ -24,13 +26,9 @@ function App() {
 
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event
-		console.log({
-			active,
-			over,
-		})
 
 		if (over && active.data.current) {
-			const [nextEmpleadoId] = (over.id as string).split("-")
+			const [nextEmpleadoId, nextHora] = (over.id as string).split("-")
 			const draggedEvent = active.data.current as TEvento
 
 			if (draggedEvent.empleado.id !== nextEmpleadoId) {
@@ -38,6 +36,28 @@ function App() {
 					prev.map((prevEvento) =>
 						prevEvento.id === draggedEvent.id
 							? { ...prevEvento, empleado: EMPLEADOS.find((empleado) => empleado.id === nextEmpleadoId)! }
+							: prevEvento
+					)
+				)
+			} else {
+				const { nextHoraInicio, nextHoraFin } = calcularNuevoRangoHoras({
+					horaInicio: draggedEvent.hora_inicio,
+					horaFin: draggedEvent.hora_fin,
+					nuevaHoraInicio: nextHora,
+				})
+
+				if (nextHoraInicio == nextHoraFin) {
+					return toast({
+						title: "Error",
+						description: "No puedes mover el evento a la misma hora",
+						variant: "destructive",
+					})
+				}
+
+				setEventos((prev) =>
+					prev.map((prevEvento) =>
+						prevEvento.id === draggedEvent.id
+							? { ...prevEvento, hora_inicio: nextHoraInicio, hora_fin: nextHoraFin }
 							: prevEvento
 					)
 				)
