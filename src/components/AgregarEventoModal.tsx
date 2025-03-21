@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TEmpleado, THora } from "@/types"
 import { toast } from "@/hooks/use-toast"
 
-interface AddEventModalProps {
+interface Props {
 	isOpen: boolean
 	onClose: () => void
 	onAdd: (employeeId: string, title: string, startTime: string, endTime: string) => void
@@ -16,7 +16,7 @@ interface AddEventModalProps {
 	defaultEmployee?: TEmpleado | null
 }
 
-export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees, defaultEmployee = null }: AddEventModalProps) {
+export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employees, defaultEmployee = null }: Props) {
 	const [title, setTitle] = useState("")
 	const [startTime, setStartTime] = useState(timeSlots[0]?.hora)
 	const [endTime, setEndTime] = useState(timeSlots[1]?.hora)
@@ -46,7 +46,6 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees, de
 		onClose()
 	}
 
-	// Reset state when modal opens or closes
 	useEffect(() => {
 		if (defaultEmployee) {
 			setSelectedEmployeeId(defaultEmployee.id)
@@ -123,9 +122,7 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees, de
 						<Button type="button" variant="outline" onClick={onClose}>
 							Cancelar
 						</Button>
-						<Button type="submit" disabled={!selectedEmployeeId}>
-							Agregar Evento
-						</Button>
+						<Button type="submit">Agregar Evento</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>

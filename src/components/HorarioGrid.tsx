@@ -3,7 +3,7 @@ import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { AddEventModal } from "./AddEventModal"
+import { AgregarEventoModal } from "./AgregarEventoModal"
 import { TEmpleado, TEvento, THora } from "@/types"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
@@ -90,7 +90,7 @@ export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }
 					Agregar Evento
 				</Button>
 			</div>
-			<AddEventModal
+			<AgregarEventoModal
 				isOpen={modalOpen}
 				onClose={() => {
 					setModalOpen(false)
