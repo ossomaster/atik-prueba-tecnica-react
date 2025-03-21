@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { TEvento, THora } from "@/types"
 import { useDraggable } from "@dnd-kit/core"
+import { MoveIcon } from "lucide-react"
 import { CSSProperties } from "react"
 
 export default function EventoBar({
@@ -42,12 +43,20 @@ export default function EventoBar({
 
 	return (
 		<div
-			ref={setNodeRef}
 			style={style}
-			className={cn("absolute left-0 cursor-move rounded shadow-md", "opacity-90 hover:opacity-100 transition-opacity")}
-			{...listeners}
-			{...attributes}
+			className={cn(
+				"absolute left-0 rounded shadow-md cursor-pointer flex items-center",
+				"opacity-90 hover:opacity-100 transition-opacity"
+			)}
 		>
+			<button
+				className="flex-shrink-0 flex items-center justify-center size-6 p-1 cursor-move"
+				ref={setNodeRef}
+				{...listeners}
+				{...attributes}
+			>
+				<MoveIcon className="size-3 opacity-50" />
+			</button>
 			<div
 				className="p-2 text-xs truncate"
 				style={{
