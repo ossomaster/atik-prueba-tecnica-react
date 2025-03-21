@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TEmpleado, THora } from "@/types"
+import { toast } from "@/hooks/use-toast"
 
 interface AddEventModalProps {
 	isOpen: boolean
@@ -12,35 +13,58 @@ interface AddEventModalProps {
 	onAdd: (employeeId: string, title: string, startTime: string, endTime: string) => void
 	timeSlots: THora[]
 	employees: TEmpleado[]
+	defaultEmployee?: TEmpleado | null
 }
 
-export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: AddEventModalProps) {
+export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees, defaultEmployee = null }: AddEventModalProps) {
 	const [title, setTitle] = useState("")
 	const [startTime, setStartTime] = useState(timeSlots[0]?.hora)
 	const [endTime, setEndTime] = useState(timeSlots[1]?.hora)
-	const [selectedEmployeeId, setSelectedEmployeeId] = useState("")
+	const [selectedEmployeeId, setSelectedEmployeeId] = useState(defaultEmployee?.id || "")
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!selectedEmployeeId) return
+		if (!selectedEmployeeId) {
+			toast({
+				title: "Error",
+				description: "Debe seleccionar un empleado.",
+				variant: "destructive",
+			})
+			return
+		}
+		if (endTime <= startTime) {
+			toast({
+				title: "Error",
+				description: "La hora de fin debe ser mayor a la hora de inicio.",
+				variant: "destructive",
+			})
+			return
+		}
 		onAdd(selectedEmployeeId, title, startTime, endTime)
 		setTitle("")
 		setSelectedEmployeeId("")
 		onClose()
 	}
 
+	// Reset state when modal opens or closes
+	useEffect(() => {
+		if (defaultEmployee) {
+			setSelectedEmployeeId(defaultEmployee.id)
+		}
+	}, [defaultEmployee])
+
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent className="sm:max-w-sm">
 				<DialogHeader>
-					<DialogTitle>Add New Event</DialogTitle>
+					<DialogTitle>Agregar Evento</DialogTitle>
 				</DialogHeader>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="space-y-2">
-						<Label htmlFor="employee">Employee</Label>
+						<Label htmlFor="employee">Empleado</Label>
 						<Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId} required>
 							<SelectTrigger>
-								<SelectValue placeholder="Select employee" />
+								<SelectValue placeholder="Seleccione un empleado" />
 							</SelectTrigger>
 							<SelectContent>
 								{employees.map((employee) => (
@@ -52,21 +76,21 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 						</Select>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="title">Event Title</Label>
+						<Label htmlFor="title">Título del Evento</Label>
 						<Input
 							id="title"
 							value={title}
 							onChange={(e) => setTitle(e.target.value)}
-							placeholder="Enter event title"
+							placeholder="Ingrese el título del evento"
 							required
 						/>
 					</div>
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
-							<Label>Start Time</Label>
+							<Label>Hora de Inicio</Label>
 							<Select value={startTime} onValueChange={setStartTime}>
 								<SelectTrigger>
-									<SelectValue placeholder="Select start time" />
+									<SelectValue placeholder="Seleccione la hora de inicio" />
 								</SelectTrigger>
 								<SelectContent>
 									{timeSlots.map((slot) => (
@@ -78,10 +102,10 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 							</Select>
 						</div>
 						<div className="space-y-2">
-							<Label>End Time</Label>
+							<Label>Hora de Fin</Label>
 							<Select value={endTime} onValueChange={setEndTime}>
 								<SelectTrigger>
-									<SelectValue placeholder="Select end time" />
+									<SelectValue placeholder="Seleccione la hora de fin" />
 								</SelectTrigger>
 								<SelectContent>
 									{timeSlots
@@ -97,10 +121,10 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 					</div>
 					<DialogFooter>
 						<Button type="button" variant="outline" onClick={onClose}>
-							Cancel
+							Cancelar
 						</Button>
 						<Button type="submit" disabled={!selectedEmployeeId}>
-							Add Event
+							Agregar Evento
 						</Button>
 					</DialogFooter>
 				</form>

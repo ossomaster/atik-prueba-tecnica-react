@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core"
+import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -14,11 +14,13 @@ interface ScheduleGridProps {
 	onEventDrop: (eventId: string, newEmployeeId: string) => void
 }
 
-export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent, onEventDrop }: ScheduleGridProps) {
+export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent }: ScheduleGridProps) {
 	const [modalOpen, setModalOpen] = useState(false)
+	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
 
-	const handleContextMenu = (e: React.MouseEvent) => {
+	const handleContextMenu = (e: React.MouseEvent, employee: TEmpleado) => {
 		e.preventDefault()
+		setDefaultEmployee(employee)
 		setModalOpen(true)
 	}
 
@@ -55,11 +57,11 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent,
 										<p className="text-sm text-gray-500">{employee.area}</p>
 									</div>
 								</td>
-								{timeSlots.map((slot, slotIndex) => (
+								{timeSlots.map((slot) => (
 									<td
 										key={`${employee.id}-${slot.hora}`}
 										className="p-3 border-b border-r relative h-24"
-										onContextMenu={handleContextMenu}
+										onContextMenu={(e) => handleContextMenu(e, employee)}
 									>
 										<DroppableCell employeeId={employee.id} timeSlot={slot.hora}>
 											<div className="absolute inset-0 flex flex-col gap-1">
@@ -91,10 +93,14 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent,
 			</div>
 			<AddEventModal
 				isOpen={modalOpen}
-				onClose={() => setModalOpen(false)}
+				onClose={() => {
+					setModalOpen(false)
+					setDefaultEmployee(null)
+				}}
 				onAdd={handleAddEvent}
 				timeSlots={timeSlots}
 				employees={selectedEmployees}
+				defaultEmployee={defaultEmployee}
 			/>
 		</div>
 	)
