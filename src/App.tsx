@@ -6,25 +6,27 @@ import { EMPLEADOS, EVENTO_COLORES, HORAS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
 
 function App() {
-	const [selectedEmployees, setSelectedEmployees] = useState<TEmpleado[]>([])
-	const [events, setEvents] = useState<TEvento[]>([])
+	const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<TEmpleado[]>([])
+	const [eventos, setEventos] = useState<TEvento[]>([])
 
-	const handleEmployeeSelect = (employee: TEmpleado) => {
-		setSelectedEmployees((prev) =>
-			prev.some((e) => e.id === employee.id) ? prev.filter((e) => e.id !== employee.id) : [...prev, employee]
+	const handleSeleccionarEmpleado = (employee: TEmpleado) => {
+		setEmpleadosSeleccionados((prev) =>
+			prev.some((prevEmpleado) => prevEmpleado.id === employee.id)
+				? prev.filter((e) => e.id !== employee.id)
+				: [...prev, employee]
 		)
 	}
 
-	const handleAddEvent = (empleado_id: string, hora_inicio: string, hora_fin: string, nombre: string) => {
+	const handleAgregarEvento = (empleadoId: string, horaInicio: string, horaFin: string, nombre: string) => {
 		const newEvent: TEvento = {
 			id: crypto.randomUUID(),
-			empleado: EMPLEADOS.find((e) => e.id === empleado_id)!,
-			hora_inicio,
-			hora_fin,
+			empleado: EMPLEADOS.find((e) => e.id === empleadoId)!,
+			hora_inicio: horaInicio,
+			hora_fin: horaFin,
 			nombre,
-			color: EVENTO_COLORES[events.length % EVENTO_COLORES.length],
+			color: EVENTO_COLORES[eventos.length % EVENTO_COLORES.length],
 		}
-		setEvents((prev) => [...prev, newEvent])
+		setEventos((prev) => [...prev, newEvent])
 	}
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -35,9 +37,11 @@ function App() {
 			const draggedEvent = active.data.current as TEvento
 
 			if (draggedEvent.empleado.id !== newEmployeeId) {
-				setEvents((prev) =>
-					prev.map((e) =>
-						e.id === draggedEvent.id ? { ...e, empleado: EMPLEADOS.find((e) => e.id === newEmployeeId)! } : e
+				setEventos((prev) =>
+					prev.map((prevEvento) =>
+						prevEvento.id === draggedEvent.id
+							? { ...prevEvento, empleado: EMPLEADOS.find((e) => e.id === newEmployeeId)! }
+							: prevEvento
 					)
 				)
 			}
@@ -46,22 +50,19 @@ function App() {
 
 	return (
 		<DndContext onDragEnd={handleDragEnd}>
-			<div className="h-screen container mx-auto p-8">
-				<div className="grid grid-cols-[300px_1fr] gap-8 h-full">
-					<ListaEmpleados empleados={EMPLEADOS} empleadosSeleccionados={selectedEmployees} onSelect={handleEmployeeSelect} />
+			<div className="h-screen container mx-auto p-4">
+				<div className="grid grid-cols-[300px_1fr] grid-rows-1 gap-8 h-full">
+					<ListaEmpleados
+						empleados={EMPLEADOS}
+						empleadosSeleccionados={empleadosSeleccionados}
+						onSelect={handleSeleccionarEmpleado}
+					/>
 					<div className="min-w-0">
 						<HorarioGrid
-							selectedEmployees={selectedEmployees}
-							events={events}
-							timeSlots={HORAS}
-							onAddEvent={handleAddEvent}
-							onEventDrop={(eventId, newEmployeeId) => {
-								setEvents((prev) =>
-									prev.map((e) =>
-										e.id === eventId ? { ...e, empleado: EMPLEADOS.find((e) => e.id === newEmployeeId)! } : e
-									)
-								)
-							}}
+							empleadosSeleccionados={empleadosSeleccionados}
+							eventos={eventos}
+							horas={HORAS}
+							onAgregarEvento={handleAgregarEvento}
 						/>
 					</div>
 				</div>

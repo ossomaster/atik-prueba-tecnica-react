@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { CSSProperties, useState } from "react"
 import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -8,14 +8,13 @@ import { TEmpleado, TEvento, THora } from "@/types"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
 interface Props {
-	selectedEmployees: TEmpleado[]
-	events: TEvento[]
-	timeSlots: THora[]
-	onAddEvent: (employeeId: string, startTime: string, endTime: string, title: string) => void
-	onEventDrop: (eventId: string, newEmployeeId: string) => void
+	empleadosSeleccionados: TEmpleado[]
+	eventos: TEvento[]
+	horas: THora[]
+	onAgregarEvento: (empleadoId: string, horaInicio: string, horaFin: string, nombre: string) => void
 }
 
-export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }: Props) {
+export function HorarioGrid({ empleadosSeleccionados, eventos, horas, onAgregarEvento }: Props) {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
 
@@ -25,8 +24,8 @@ export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }
 		setModalOpen(true)
 	}
 
-	const handleAddEvent = (employeeId: string, title: string, startTime: string, endTime: string) => {
-		onAddEvent(employeeId, startTime, endTime, title)
+	const handleAddEvent = (empleadoId: string, nombre: string, horaInicio: string, horaFin: string) => {
+		onAgregarEvento(empleadoId, horaInicio, horaFin, nombre)
 	}
 
 	return (
@@ -36,41 +35,44 @@ export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }
 					<TableHeader>
 						<TableRow>
 							<TableHead className="min-w-[150px] bg-gray-100 text-xs">Empleados</TableHead>
-							{timeSlots.map((slot) => (
-								<TableHead key={slot.hora} className="min-w-[90px] text-center text-xs">
-									{slot.etiqueta}
+							{horas.map((horaItem) => (
+								<TableHead key={horaItem.hora} className="min-w-[90px] text-center text-xs border">
+									{horaItem.etiqueta}
 								</TableHead>
 							))}
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{selectedEmployees.map((employee) => (
-							<TableRow key={employee.id}>
+						{empleadosSeleccionados.map((empleado) => (
+							<TableRow key={empleado.id}>
 								<TableCell className="bg-gray-100 text-xs">
-									<p className="font-medium">{employee.nombre}</p>
-									<p className="text-gray-500">{employee.area}</p>
+									<p className="font-medium">{empleado.nombre}</p>
+									<p className="text-gray-500">{empleado.area}</p>
 								</TableCell>
-								{timeSlots.map((slot) => (
+								{horas.map((horaItem) => (
 									<TableCell
-										key={`${employee.id}-${slot.hora}`}
-										className="relative"
-										onContextMenu={(e) => handleContextMenu(e, employee)}
+										key={`${empleado.id}-${horaItem.hora}`}
+										className="relative border"
+										onContextMenu={(e) => handleContextMenu(e, empleado)}
 									>
-										<DroppableCell employeeId={employee.id} timeSlot={slot.hora}>
+										<DroppableCell empleadoId={empleado.id} hora={horaItem.hora}>
 											<div className="absolute inset-0 flex flex-col gap-1">
-												{events
+												{eventos
 													.filter(
-														(event) => event.empleado.id === employee.id && event.hora_inicio === slot.hora
+														(evento) =>
+															evento.empleado.id === empleado.id && evento.hora_inicio === horaItem.hora
 													)
-													.map((event, eventIndex) => (
+													.map((evento, eventIndex) => (
 														<EventBar
-															key={event.id}
-															event={event}
-															timeSlots={timeSlots}
+															key={evento.id}
+															evento={evento}
+															horas={horas}
 															index={eventIndex}
-															totalEvents={
-																events.filter(
-																	(e) => e.empleado.id === employee.id && e.hora_inicio === slot.hora
+															totalEventos={
+																eventos.filter(
+																	(eventoTotal) =>
+																		eventoTotal.empleado.id === empleado.id &&
+																		eventoTotal.hora_inicio === horaItem.hora
 																).length
 															}
 														/>
@@ -85,7 +87,7 @@ export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }
 				</Table>
 			</div>
 			<div className="p-4 border-b text-end">
-				<Button size="sm" onClick={() => setModalOpen(true)} disabled={selectedEmployees.length === 0}>
+				<Button size="sm" onClick={() => setModalOpen(true)} disabled={empleadosSeleccionados.length === 0}>
 					<Plus className="h-4 w-4 mr-2" />
 					Agregar Evento
 				</Button>
@@ -97,20 +99,20 @@ export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }
 					setDefaultEmployee(null)
 				}}
 				onAdd={handleAddEvent}
-				timeSlots={timeSlots}
-				employees={selectedEmployees}
-				defaultEmployee={defaultEmployee}
+				horas={horas}
+				empleados={empleadosSeleccionados}
+				defaultEmpleado={defaultEmployee}
 			/>
 		</div>
 	)
 }
 
-function DroppableCell({ employeeId, timeSlot, children }: { employeeId: string; timeSlot: string; children: React.ReactNode }) {
+function DroppableCell({ empleadoId, hora, children }: { empleadoId: string; hora: string; children: React.ReactNode }) {
 	const { setNodeRef } = useDroppable({
-		id: `${employeeId}-${timeSlot}`,
+		id: `${empleadoId}-${hora}`,
 		data: {
-			employeeId,
-			timeSlot,
+			empleadoId,
+			hora,
 		},
 	})
 
@@ -121,41 +123,31 @@ function DroppableCell({ employeeId, timeSlot, children }: { employeeId: string;
 	)
 }
 
-function EventBar({
-	event,
-	timeSlots,
-	index,
-	totalEvents,
-}: {
-	event: TEvento
-	timeSlots: THora[]
-	index: number
-	totalEvents: number
-}) {
-	const startIndex = timeSlots.findIndex((slot) => slot.hora === event.hora_inicio)
-	const endIndex = timeSlots.findIndex((slot) => slot.hora === event.hora_fin)
+function EventBar({ evento, horas, index, totalEventos }: { evento: TEvento; horas: THora[]; index: number; totalEventos: number }) {
+	const startIndex = horas.findIndex((slot) => slot.hora === evento.hora_inicio)
+	const endIndex = horas.findIndex((slot) => slot.hora === evento.hora_fin)
 	const width = `${(endIndex - startIndex) * 100}%`
-	const height = `${100 / totalEvents}%`
-	const top = `${index * (100 / totalEvents)}%`
+	const height = `${100 / totalEventos}%`
+	const top = `${index * (100 / totalEventos)}%`
 
 	const { attributes, listeners, setNodeRef, transform } = useDraggable({
-		id: event.id,
-		data: event,
+		id: evento.id,
+		data: evento,
 	})
 
-	const style = transform
+	const style: CSSProperties = transform
 		? {
 				transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
 				width,
 				height,
 				top,
-				backgroundColor: event.color,
+				backgroundColor: evento.color + "40",
 		  }
 		: {
 				width,
 				height,
 				top,
-				backgroundColor: event.color,
+				backgroundColor: evento.color + "30",
 		  }
 
 	return (
@@ -166,11 +158,16 @@ function EventBar({
 			{...listeners}
 			{...attributes}
 		>
-			<div className="p-2 text-xs text-white truncate">
-				<div className="font-medium truncate">{event.nombre}</div>
-				<div className="truncate">
-					{event.hora_inicio} - {event.hora_fin}
-				</div>
+			<div
+				className="p-2 text-xs truncate"
+				style={{
+					color: evento.color,
+				}}
+			>
+				<h3 className="inline-block font-medium truncate">{evento.nombre}</h3>
+				<p className="inline-block truncate ml-2">
+					{evento.hora_inicio} - {evento.hora_fin}
+				</p>
 			</div>
 		</div>
 	)

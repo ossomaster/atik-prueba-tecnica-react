@@ -10,17 +10,17 @@ import { toast } from "@/hooks/use-toast"
 interface Props {
 	isOpen: boolean
 	onClose: () => void
-	onAdd: (employeeId: string, title: string, startTime: string, endTime: string) => void
-	timeSlots: THora[]
-	employees: TEmpleado[]
-	defaultEmployee?: TEmpleado | null
+	onAdd: (empleadoId: string, titulo: string, horaInicio: string, horaFin: string) => void
+	horas: THora[]
+	empleados: TEmpleado[]
+	defaultEmpleado?: TEmpleado | null
 }
 
-export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employees, defaultEmployee = null }: Props) {
+export function AgregarEventoModal({ isOpen, onClose, onAdd, horas, empleados, defaultEmpleado = null }: Props) {
 	const [title, setTitle] = useState("")
-	const [startTime, setStartTime] = useState(timeSlots[0]?.hora)
-	const [endTime, setEndTime] = useState(timeSlots[1]?.hora)
-	const [selectedEmployeeId, setSelectedEmployeeId] = useState(defaultEmployee?.id || "")
+	const [startTime, setStartTime] = useState(horas[0]?.hora)
+	const [endTime, setEndTime] = useState(horas[1]?.hora)
+	const [selectedEmployeeId, setSelectedEmployeeId] = useState(defaultEmpleado?.id || "")
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -47,10 +47,10 @@ export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employee
 	}
 
 	useEffect(() => {
-		if (defaultEmployee) {
-			setSelectedEmployeeId(defaultEmployee.id)
+		if (defaultEmpleado) {
+			setSelectedEmployeeId(defaultEmpleado.id)
 		}
-	}, [defaultEmployee])
+	}, [defaultEmpleado])
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
@@ -66,9 +66,9 @@ export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employee
 								<SelectValue placeholder="Seleccione un empleado" />
 							</SelectTrigger>
 							<SelectContent>
-								{employees.map((employee) => (
-									<SelectItem key={employee.id} value={employee.id}>
-										{employee.nombre} - {employee.area}
+								{empleados.map((empleado) => (
+									<SelectItem key={empleado.id} value={empleado.id}>
+										{empleado.nombre} - {empleado.area}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -92,7 +92,7 @@ export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employee
 									<SelectValue placeholder="Seleccione la hora de inicio" />
 								</SelectTrigger>
 								<SelectContent>
-									{timeSlots.map((slot) => (
+									{horas.map((slot) => (
 										<SelectItem key={slot.hora} value={slot.hora}>
 											{slot.etiqueta}
 										</SelectItem>
@@ -107,7 +107,7 @@ export function AgregarEventoModal({ isOpen, onClose, onAdd, timeSlots, employee
 									<SelectValue placeholder="Seleccione la hora de fin" />
 								</SelectTrigger>
 								<SelectContent>
-									{timeSlots
+									{horas
 										.filter((slot) => slot.hora > startTime)
 										.map((slot) => (
 											<SelectItem key={slot.hora} value={slot.hora}>

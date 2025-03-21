@@ -9,10 +9,10 @@ export const EMPLEADOS: TEmpleado[] = [
     { id: "6", nombre: "Gabriela Torres", area: "Administración", cargo: "Gerente" },
     { id: "7", nombre: "Héctor Ramírez", area: "Cocina", cargo: "Ayudante de cocina" },
     { id: "8", nombre: "Isabel Fernández", area: "Recepción", cargo: "Asistente" },
-    // { id: "9", nombre: "Jorge Pérez", area: "Mantenimiento", cargo: "Electricista" },
-    // { id: "10", nombre: "Karen Morales", area: "Limpieza", cargo: "Auxiliar" },
-    // { id: "11", nombre: "Luis Gómez", area: "Seguridad", cargo: "Supervisor" },
-    // { id: "12", nombre: "María Hernández", area: "Administración", cargo: "Contadora" },
+    { id: "9", nombre: "Jorge Pérez", area: "Mantenimiento", cargo: "Electricista" },
+    { id: "10", nombre: "Karen Morales", area: "Limpieza", cargo: "Auxiliar" },
+    { id: "11", nombre: "Luis Gómez", area: "Seguridad", cargo: "Supervisor" },
+    { id: "12", nombre: "María Hernández", area: "Administración", cargo: "Contadora" },
 ]
 
 export const EVENTO_COLORES = [
