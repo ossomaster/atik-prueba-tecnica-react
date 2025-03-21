@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { DndContext, DragEndEvent } from "@dnd-kit/core"
 import { ListaEmpleados } from "./components/ListaEmpleados"
-import { ScheduleGrid } from "./components/ScheduleGrid"
+import { HorarioGrid } from "./components/HorarioGrid"
 import { EMPLEADOS, EVENTO_COLORES, HORAS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
 
@@ -46,11 +46,11 @@ function App() {
 
 	return (
 		<DndContext onDragEnd={handleDragEnd}>
-			<div className="h-screen container mx-auto bg-gray-100 p-8">
+			<div className="h-screen container mx-auto p-8">
 				<div className="grid grid-cols-[300px_1fr] gap-8 h-full">
 					<ListaEmpleados empleados={EMPLEADOS} empleadosSeleccionados={selectedEmployees} onSelect={handleEmployeeSelect} />
-					<div className="">
-						<ScheduleGrid
+					<div className="min-w-0">
+						<HorarioGrid
 							selectedEmployees={selectedEmployees}
 							events={events}
 							timeSlots={HORAS}

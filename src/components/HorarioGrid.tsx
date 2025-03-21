@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { AddEventModal } from "./AddEventModal"
 import { TEmpleado, TEvento, THora } from "@/types"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
-interface ScheduleGridProps {
+interface Props {
 	selectedEmployees: TEmpleado[]
 	events: TEvento[]
 	timeSlots: THora[]
@@ -14,7 +15,7 @@ interface ScheduleGridProps {
 	onEventDrop: (eventId: string, newEmployeeId: string) => void
 }
 
-export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent }: ScheduleGridProps) {
+export function HorarioGrid({ selectedEmployees, events, timeSlots, onAddEvent }: Props) {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
 
@@ -29,38 +30,30 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent 
 	}
 
 	return (
-		<div className="bg-white rounded-lg shadow-lg overflow-hidden">
-			<div className="p-4 border-b">
-				<Button onClick={() => setModalOpen(true)} disabled={selectedEmployees.length === 0}>
-					<Plus className="h-4 w-4 mr-2" />
-					Add Event
-				</Button>
-			</div>
+		<div className="bg-white rounded-lg shadow-lg w-full">
 			<div className="overflow-x-auto">
-				<table className="w-full border-collapse">
-					<thead>
-						<tr className="bg-gray-50">
-							<th className="p-3 border-b border-r min-w-[200px] text-left">Employee</th>
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead className="min-w-[150px] bg-gray-100 text-xs">Empleados</TableHead>
 							{timeSlots.map((slot) => (
-								<th key={slot.hora} className="p-3 border-b border-r min-w-[100px] text-center">
+								<TableHead key={slot.hora} className="min-w-[90px] text-center text-xs">
 									{slot.etiqueta}
-								</th>
+								</TableHead>
 							))}
-						</tr>
-					</thead>
-					<tbody>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{selectedEmployees.map((employee) => (
-							<tr key={employee.id}>
-								<td className="p-3 border-b border-r">
-									<div>
-										<p className="font-medium">{employee.nombre}</p>
-										<p className="text-sm text-gray-500">{employee.area}</p>
-									</div>
-								</td>
+							<TableRow key={employee.id}>
+								<TableCell className="bg-gray-100 text-xs">
+									<p className="font-medium">{employee.nombre}</p>
+									<p className="text-gray-500">{employee.area}</p>
+								</TableCell>
 								{timeSlots.map((slot) => (
-									<td
+									<TableCell
 										key={`${employee.id}-${slot.hora}`}
-										className="p-3 border-b border-r relative h-24"
+										className="relative"
 										onContextMenu={(e) => handleContextMenu(e, employee)}
 									>
 										<DroppableCell employeeId={employee.id} timeSlot={slot.hora}>
@@ -84,12 +77,18 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent 
 													))}
 											</div>
 										</DroppableCell>
-									</td>
+									</TableCell>
 								))}
-							</tr>
+							</TableRow>
 						))}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
+			</div>
+			<div className="p-4 border-b text-end">
+				<Button size="sm" onClick={() => setModalOpen(true)} disabled={selectedEmployees.length === 0}>
+					<Plus className="h-4 w-4 mr-2" />
+					Agregar Evento
+				</Button>
 			</div>
 			<AddEventModal
 				isOpen={modalOpen}
