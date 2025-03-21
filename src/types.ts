@@ -24,3 +24,15 @@ export type TLicenciaPermiso = {
 	nombre: string
 	color: string
 }
+
+export type TTurno = {
+	id: string
+	nombre: string
+	color: string
+}
+
+export type TEstado = {
+	id: string
+	nombre: string
+	color: string
+}

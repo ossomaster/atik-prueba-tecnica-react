@@ -2,9 +2,9 @@ import { CSSProperties, useState } from "react"
 import { useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { InfoIcon, Plus } from "lucide-react"
 import { AgregarEventoModal } from "./AgregarEventoModal"
-import { TEmpleado, TEvento, THora, TLicenciaPermiso } from "@/types"
+import { TEmpleado, TEvento, THora, TLicenciaPermiso, TTurno, TEstado } from "@/types"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
 interface Props {
@@ -12,10 +12,12 @@ interface Props {
 	eventos: TEvento[]
 	horas: THora[]
 	licenciasPermisos: TLicenciaPermiso[]
+	turnos: TTurno[]
+	estados: TEstado[]
 	onAgregarEvento: (evento: TEvento) => void
 }
 
-export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasPermisos, onAgregarEvento }: Props) {
+export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasPermisos, turnos, estados, onAgregarEvento }: Props) {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
 
@@ -55,7 +57,7 @@ export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasP
 							{empleadosSeleccionados.length === 0 && (
 								<TableRow>
 									<TableCell colSpan={horas.length + 1} className="text-gray-500">
-										Seleccione empleados para comenzar
+										<InfoIcon className="inline-block" /> Seleccione empleados para comenzar
 									</TableCell>
 								</TableRow>
 							)}
@@ -104,6 +106,24 @@ export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasP
 					</Table>
 				</div>
 			</div>
+			{/* Turnos */}
+			<div className="p-4 bg-white rounded-lg shadow-lg mt-4 flex items-center gap-2">
+				<h3 className="text-sm">Turnos de trabajo:</h3>
+				<ul className="flex gap-2">
+					{turnos.map((turno) => (
+						<li key={turno.id}>
+							<span
+								className="text-xs font-medium px-2 py-1 rounded text-white"
+								style={{
+									backgroundColor: turno.color,
+								}}
+							>
+								{turno.nombre}
+							</span>
+						</li>
+					))}
+				</ul>
+			</div>
 			{/* Licencias y permisos */}
 			<div className="p-4 bg-white rounded-lg shadow-lg mt-4 flex items-center gap-2">
 				<h3 className="text-sm">Licencias y permisos:</h3>
@@ -119,6 +139,23 @@ export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasP
 							>
 								{licenciaPermiso.nombre}
 							</span>
+						</li>
+					))}
+				</ul>
+			</div>
+			{/* Estados */}
+			<div className="p-4 bg-white rounded-lg shadow-lg mt-4 flex items-center gap-2">
+				<h3 className="text-sm">Estados de marcajes:</h3>
+				<ul className="flex gap-4">
+					{estados.map((estado) => (
+						<li key={estado.id} className="flex items-center gap-1 text-xs">
+							<span
+								className="size-4 rounded-full inline-block"
+								style={{
+									backgroundColor: estado.color,
+								}}
+							></span>
+							{estado.nombre}
 						</li>
 					))}
 				</ul>

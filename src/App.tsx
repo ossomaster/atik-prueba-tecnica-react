@@ -2,7 +2,7 @@ import { useState } from "react"
 import { DndContext, DragEndEvent } from "@dnd-kit/core"
 import { ListaEmpleados } from "./components/ListaEmpleados"
 import { HorarioGrid } from "./components/HorarioGrid"
-import { EMPLEADOS, HORAS, LICENCIAS_PERMISOS } from "./constants"
+import { EMPLEADOS, ESTADOS, HORAS, LICENCIAS_PERMISOS, TURNOS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
 
 function App() {
@@ -55,6 +55,8 @@ function App() {
 							eventos={eventos}
 							horas={HORAS}
 							licenciasPermisos={LICENCIAS_PERMISOS}
+							turnos={TURNOS}
+							estados={ESTADOS}
 							onAgregarEvento={handleAgregarEvento}
 						/>
 					</DndContext>

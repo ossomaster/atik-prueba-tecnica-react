@@ -1,4 +1,4 @@
-import { TEmpleado, THora, TLicenciaPermiso } from "./types"
+import { TEmpleado, THora, TLicenciaPermiso, TTurno, TEstado } from "./types"
 
 export const EMPLEADOS: TEmpleado[] = [
 	{ id: "1", nombre: "Ana María Santos", area: "Recepción", cargo: "Recepcionista" },
@@ -15,6 +15,14 @@ export const EMPLEADOS: TEmpleado[] = [
 	{ id: "12", nombre: "María Hernández", area: "Administración", cargo: "Contadora" },
 ]
 
+export const TURNOS: TTurno[] = [
+	{ id: "1", nombre: "A", color: "#8B5CF6" }, // Morado
+	{ id: "2", nombre: "M", color: "#F59E0B" }, // Mostaza
+	{ id: "3", nombre: "N", color: "#6366F1" }, // Indigo
+	{ id: "4", nombre: "S", color: "#7C3AED" }, // Violeta
+	{ id: "5", nombre: "T", color: "#10B981" }, // Verde
+]
+
 export const LICENCIAS_PERMISOS: TLicenciaPermiso[] = [
 	{ id: "1", nombre: "DESCANSO", color: "#EF4444" },
 	{ id: "2", nombre: "LICENCIA POR MATERNIDAD", color: "#F59E0B" },
@@ -22,6 +30,15 @@ export const LICENCIAS_PERMISOS: TLicenciaPermiso[] = [
 	{ id: "4", nombre: "ESTUDIOS", color: "#8B5CF6" },
 	{ id: "5", nombre: "TRÁMITE LEGAL", color: "#333333" },
 	{ id: "6", nombre: "NACIMIENTO DE UN HIJO", color: "#EF4444" },
+]
+
+export const ESTADOS: TEstado[] = [
+	{ id: "1", nombre: "A tiempo", color: "#10B981" }, // Verde
+	{ id: "2", nombre: "Tardanza", color: "#F97316" }, // Naranja
+	{ id: "3", nombre: "Salida anticipada", color: "#F59E0B" }, // Mostaza
+	{ id: "4", nombre: "Ausencia", color: "#EF4444" }, // Rojo
+	{ id: "5", nombre: "Marcaje de entrada", color: "#84CC16" }, // Verde limón
+	{ id: "6", nombre: "Marcaje de salida", color: "#6366F1" }, // Indigo
 ]
 
 export const HORAS: THora[] = Array.from({ length: 16 }, (_, i) => {
