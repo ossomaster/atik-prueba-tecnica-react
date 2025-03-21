@@ -1,7 +1,8 @@
-import { useState } from "react"
 import { DndContext, DragEndEvent } from "@dnd-kit/core"
+import { useState } from "react"
+import Header from "./components/Header"
+import { Horario } from "./components/Horario/Horario"
 import { ListaEmpleados } from "./components/ListaEmpleados"
-import { HorarioGrid } from "./components/HorarioGrid"
 import { EMPLEADOS, ESTADOS, HORAS, LICENCIAS_PERMISOS, TURNOS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
 
@@ -23,16 +24,20 @@ function App() {
 
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event
+		console.log({
+			active,
+			over,
+		})
 
 		if (over && active.data.current) {
-			const [newEmployeeId] = (over.id as string).split("-")
+			const [nextEmpleadoId] = (over.id as string).split("-")
 			const draggedEvent = active.data.current as TEvento
 
-			if (draggedEvent.empleado.id !== newEmployeeId) {
+			if (draggedEvent.empleado.id !== nextEmpleadoId) {
 				setEventos((prev) =>
 					prev.map((prevEvento) =>
 						prevEvento.id === draggedEvent.id
-							? { ...prevEvento, empleado: EMPLEADOS.find((e) => e.id === newEmployeeId)! }
+							? { ...prevEvento, empleado: EMPLEADOS.find((empleado) => empleado.id === nextEmpleadoId)! }
 							: prevEvento
 					)
 				)
@@ -42,25 +47,28 @@ function App() {
 
 	return (
 		<div className="h-screen container mx-auto p-4">
-			<div className="grid grid-cols-[300px_1fr] grid-rows-1 gap-8 h-full">
-				<ListaEmpleados
-					empleados={EMPLEADOS}
-					empleadosSeleccionados={empleadosSeleccionados}
-					onSelect={handleSeleccionarEmpleado}
-				/>
-				<div className="min-w-0">
-					<DndContext onDragEnd={handleDragEnd}>
-						<HorarioGrid
-							empleadosSeleccionados={empleadosSeleccionados}
-							eventos={eventos}
-							horas={HORAS}
-							licenciasPermisos={LICENCIAS_PERMISOS}
-							turnos={TURNOS}
-							estados={ESTADOS}
-							onAgregarEvento={handleAgregarEvento}
-						/>
-					</DndContext>
-				</div>
+			<div className="grid grid-rows-[auto_1fr] grid-cols-1 gap-8 h-full">
+				<Header />
+				<main className="grid grid-cols-[300px_1fr] grid-rows-1 gap-8 min-h-0">
+					<ListaEmpleados
+						empleados={EMPLEADOS}
+						empleadosSeleccionados={empleadosSeleccionados}
+						onSelect={handleSeleccionarEmpleado}
+					/>
+					<div className="min-w-0">
+						<DndContext onDragEnd={handleDragEnd}>
+							<Horario
+								empleadosSeleccionados={empleadosSeleccionados}
+								eventos={eventos}
+								horas={HORAS}
+								licenciasPermisos={LICENCIAS_PERMISOS}
+								turnos={TURNOS}
+								estados={ESTADOS}
+								onAgregarEvento={handleAgregarEvento}
+							/>
+						</DndContext>
+					</div>
+				</main>
 			</div>
 		</div>
 	)

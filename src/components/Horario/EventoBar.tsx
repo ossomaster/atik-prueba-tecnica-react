@@ -1,0 +1,64 @@
+import { cn } from "@/lib/utils"
+import { TEvento, THora } from "@/types"
+import { useDraggable } from "@dnd-kit/core"
+import { CSSProperties } from "react"
+
+export default function EventoBar({
+	evento,
+	horas,
+	index,
+	totalEventos,
+}: {
+	evento: TEvento
+	horas: THora[]
+	index: number
+	totalEventos: number
+}) {
+	const startIndex = horas.findIndex((slot) => slot.hora === evento.hora_inicio)
+	const endIndex = horas.findIndex((slot) => slot.hora === evento.hora_fin)
+	const width = `${(endIndex - startIndex) * 100}%`
+	const height = `${80 / totalEventos}%`
+	const top = `${index * (100 / totalEventos)}%`
+
+	const { attributes, listeners, setNodeRef, transform } = useDraggable({
+		id: evento.id,
+		data: evento,
+	})
+
+	const style: CSSProperties = transform
+		? {
+				transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+				width,
+				height,
+				top,
+				backgroundColor: evento.licenciaPermiso.color + "40",
+		  }
+		: {
+				width,
+				height,
+				top,
+				backgroundColor: evento.licenciaPermiso.color + "30",
+		  }
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={style}
+			className={cn("absolute left-0 cursor-move rounded shadow-md", "opacity-90 hover:opacity-100 transition-opacity")}
+			{...listeners}
+			{...attributes}
+		>
+			<div
+				className="p-2 text-xs truncate"
+				style={{
+					color: evento.licenciaPermiso.color,
+				}}
+			>
+				<h3 className="inline-block font-medium truncate">{evento.nombre}</h3>
+				<p className="inline-block truncate ml-2">
+					{evento.hora_inicio} - {evento.hora_fin}
+				</p>
+			</div>
+		</div>
+	)
+}

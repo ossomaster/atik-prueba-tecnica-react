@@ -10,9 +10,9 @@ interface Props {
 
 export function ListaEmpleados({ empleados, empleadosSeleccionados, onSelect }: Props) {
 	return (
-		<div className="bg-white rounded-lg shadow-lg flex flex-col h-full">
-			<div className="px-4 py-2 bg-primary text-primary-foreground rounded-t-lg">
-				<h2 className="text-center">Empleados</h2>
+		<div className="bg-white rounded-lg shadow-lg flex flex-col">
+			<div className="px-4 py-2 bg-primary text-white rounded-t-lg">
+				<h2 className="text-center font-medium">Empleados</h2>
 			</div>
 			<div className="flex-grow overflow-y-auto">
 				<div className="divide-y divide-gray-200 overflow-y-auto">
@@ -22,7 +22,7 @@ export function ListaEmpleados({ empleados, empleadosSeleccionados, onSelect }: 
 							<div
 								key={empleado.id}
 								className={cn(
-									"p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors",
+									"p-2 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors",
 									isSelected && "bg-primary/5"
 								)}
 								onClick={() => onSelect(empleado)}
@@ -33,7 +33,7 @@ export function ListaEmpleados({ empleados, empleadosSeleccionados, onSelect }: 
 											"border-primary": isSelected,
 										})}
 									>
-										<h3 className="font-medium">{empleado.nombre}</h3>
+										<h3 className="font-medium text-sm">{empleado.nombre}</h3>
 										<p className="text-xs text-gray-500 flex items-center gap-1">
 											{empleado.area} • {empleado.cargo}
 										</p>
@@ -45,7 +45,7 @@ export function ListaEmpleados({ empleados, empleadosSeleccionados, onSelect }: 
 										isSelected && "bg-primary border-primary"
 									)}
 								>
-									{isSelected && <CheckIcon className="size-3 text-primary-foreground" />}
+									{isSelected && <CheckIcon className="size-3 text-white" />}
 								</div>
 							</div>
 						)
