@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { TEmpleado, TEvento, THora, TLicenciaPermiso } from "@/types"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 interface Props {
 	isOpen: boolean
@@ -81,18 +81,6 @@ export function GuardarEventoModal({
 
 		onClose()
 	}
-
-	useEffect(() => {
-		if (eventoAEditar) {
-			setEmpleadoId(eventoAEditar.empleado.id)
-			setLicenciaPermisoId(eventoAEditar.licenciaPermiso?.id || "")
-			setNombre(eventoAEditar.nombre)
-			setHoraInicio(eventoAEditar.hora_inicio)
-			setHoraFin(eventoAEditar.hora_fin)
-		} else if (defaultEmpleado) {
-			setEmpleadoId(defaultEmpleado.id)
-		}
-	}, [eventoAEditar, defaultEmpleado])
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>

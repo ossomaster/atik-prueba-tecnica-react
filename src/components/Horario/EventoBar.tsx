@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { TEvento, THora } from "@/types"
 import { useDraggable } from "@dnd-kit/core"
-import { MoveIcon } from "lucide-react"
+import { MoveIcon, XIcon } from "lucide-react"
 import { CSSProperties } from "react"
 
 export default function EventoBar({
@@ -20,7 +20,7 @@ export default function EventoBar({
 	const startIndex = horas.findIndex((slot) => slot.hora === evento.hora_inicio)
 	const endIndex = horas.findIndex((slot) => slot.hora === evento.hora_fin)
 	const width = `${(endIndex - startIndex) * 100}%`
-	const height = `${80 / totalEventos}%`
+	const height = `${90 / totalEventos}%`
 	const top = `${index * (100 / totalEventos)}%`
 
 	const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -53,12 +53,24 @@ export default function EventoBar({
 			onClick={() => onEdit(evento)}
 		>
 			<button
+				title="Mover"
 				className="flex-shrink-0 flex items-center justify-center size-6 p-1 cursor-move"
 				ref={setNodeRef}
 				{...listeners}
 				{...attributes}
 			>
 				<MoveIcon className="size-3 opacity-50" />
+			</button>
+			<button
+				title="Eliminar"
+				className="flex-shrink-0 flex items-center justify-center size-6 p-1 text-destructive"
+				onClick={(e) => {
+					e.stopPropagation()
+					// handleEliminarEvento(evento)
+					console.log("Eliminar evento")
+				}}
+			>
+				<XIcon className="size-4 opacity-50" />
 			</button>
 			<div
 				className="p-2 text-xs truncate"

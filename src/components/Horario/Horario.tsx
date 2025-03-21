@@ -5,8 +5,7 @@ import { InfoIcon, Plus } from "lucide-react"
 import { useState } from "react"
 import { GuardarEventoModal } from "../GuardarEventoModal"
 import Buscador from "./Buscador"
-import DroppableCell from "./DroppableCell"
-import EventoBar from "./EventoBar"
+import EmpleadoHoraCell from "./EmpleadoHoraCell"
 import ListaEstados from "./ListaEstados"
 import ListaLicenciasPermisos from "./ListaLicenciasPermisos"
 import ListaTurnos from "./ListaTurnos"
@@ -87,38 +86,15 @@ export function Horario({
 										<p className="text-gray-500">{empleado.area}</p>
 									</TableCell>
 									{horas.map((horaItem) => (
-										<TableCell
+										<EmpleadoHoraCell
 											key={`${empleado.id}-${horaItem.hora}`}
-											className="relative border"
-											onContextMenu={(e) => handleContextMenu(e, empleado)}
-										>
-											<DroppableCell empleadoId={empleado.id} hora={horaItem.hora}>
-												<div className="absolute inset-0 flex flex-col gap-2">
-													{eventos
-														.filter(
-															(evento) =>
-																evento.empleado.id === empleado.id &&
-																evento.hora_inicio === horaItem.hora
-														)
-														.map((evento, eventIndex) => (
-															<EventoBar
-																key={evento.id}
-																evento={evento}
-																horas={horas}
-																index={eventIndex}
-																totalEventos={
-																	eventos.filter(
-																		(eventoTotal) =>
-																			eventoTotal.empleado.id === empleado.id &&
-																			eventoTotal.hora_inicio === horaItem.hora
-																	).length
-																}
-																onEdit={handleEditEvento} // Pass edit handler
-															/>
-														))}
-												</div>
-											</DroppableCell>
-										</TableCell>
+											empleado={empleado}
+											horaItem={horaItem}
+											eventos={eventos}
+											horas={horas}
+											handleContextMenu={handleContextMenu}
+											handleEditEvento={handleEditEvento}
+										/>
 									))}
 								</TableRow>
 							))}
@@ -132,21 +108,23 @@ export function Horario({
 			<ListaLicenciasPermisos licenciasPermisos={licenciasPermisos} />
 			{/* Estados */}
 			<ListaEstados estados={estados} />
-			<GuardarEventoModal
-				isOpen={showGuardarEventoModal}
-				onClose={() => {
-					setShowGuardarEventoModal(false)
-					setDefaultEmployee(null)
-					setEventoAEditar(null)
-				}}
-				onAgregar={onAgregarEvento}
-				onEditar={onEditarEvento}
-				horas={horas}
-				empleados={empleadosSeleccionados}
-				licenciasPermisos={licenciasPermisos}
-				defaultEmpleado={defaultEmployee}
-				eventoAEditar={eventoAEditar}
-			/>
+			{showGuardarEventoModal && (
+				<GuardarEventoModal
+					isOpen={showGuardarEventoModal}
+					onClose={() => {
+						setShowGuardarEventoModal(false)
+						setDefaultEmployee(null)
+						setEventoAEditar(null)
+					}}
+					onAgregar={onAgregarEvento}
+					onEditar={onEditarEvento}
+					horas={horas}
+					empleados={empleadosSeleccionados}
+					licenciasPermisos={licenciasPermisos}
+					defaultEmpleado={defaultEmployee}
+					eventoAEditar={eventoAEditar}
+				/>
+			)}
 		</section>
 	)
 }
