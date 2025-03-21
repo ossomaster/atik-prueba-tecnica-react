@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TEmpleado, TEstado, TEvento, THora, TLicenciaPermiso, TTurno } from "@/types"
 import { InfoIcon, Plus } from "lucide-react"
 import { useState } from "react"
-import { AgregarEventoModal } from "../AgregarEventoModal"
+import { GuardarEventoModal } from "../GuardarEventoModal"
 import Buscador from "./Buscador"
 import DroppableCell from "./DroppableCell"
 import EventoBar from "./EventoBar"
@@ -19,20 +19,33 @@ interface Props {
 	turnos: TTurno[]
 	estados: TEstado[]
 	onAgregarEvento: (evento: TEvento) => void
+	onEditarEvento: (evento: TEvento) => void
 }
 
-export function Horario({ empleadosSeleccionados, eventos, horas, licenciasPermisos, turnos, estados, onAgregarEvento }: Props) {
-	const [showAgregarEventoModal, setShowAgregarEventoModal] = useState(false)
+export function Horario({
+	empleadosSeleccionados,
+	eventos,
+	horas,
+	licenciasPermisos,
+	turnos,
+	estados,
+	onAgregarEvento,
+	onEditarEvento,
+}: Props) {
+	const [showGuardarEventoModal, setShowGuardarEventoModal] = useState(false)
 	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
+	const [eventoAEditar, setEventoAEditar] = useState<TEvento | null>(null) // New state
 
 	const handleContextMenu = (e: React.MouseEvent, employee: TEmpleado) => {
 		e.preventDefault()
 		setDefaultEmployee(employee)
-		setShowAgregarEventoModal(true)
+		setEventoAEditar(null)
+		setShowGuardarEventoModal(true)
 	}
 
-	const handleAgregarEvento = (evento: TEvento) => {
-		onAgregarEvento(evento)
+	const handleEditEvento = (evento: TEvento) => {
+		setEventoAEditar(evento)
+		setShowGuardarEventoModal(true)
 	}
 
 	return (
@@ -42,7 +55,7 @@ export function Horario({ empleadosSeleccionados, eventos, horas, licenciasPermi
 			{/* Horario */}
 			<div className="bg-white rounded-lg shadow-lg w-full mt-4">
 				<div className="px-4 py-2 border-b text-end">
-					<Button size="sm" onClick={() => setShowAgregarEventoModal(true)} disabled={empleadosSeleccionados.length === 0}>
+					<Button size="sm" onClick={() => setShowGuardarEventoModal(true)} disabled={empleadosSeleccionados.length === 0}>
 						<Plus className="h-4 w-4 mr-2" />
 						Agregar Evento
 					</Button>
@@ -100,6 +113,7 @@ export function Horario({ empleadosSeleccionados, eventos, horas, licenciasPermi
 																			eventoTotal.hora_inicio === horaItem.hora
 																	).length
 																}
+																onEdit={handleEditEvento} // Pass edit handler
 															/>
 														))}
 												</div>
@@ -118,17 +132,20 @@ export function Horario({ empleadosSeleccionados, eventos, horas, licenciasPermi
 			<ListaLicenciasPermisos licenciasPermisos={licenciasPermisos} />
 			{/* Estados */}
 			<ListaEstados estados={estados} />
-			<AgregarEventoModal
-				isOpen={showAgregarEventoModal}
+			<GuardarEventoModal
+				isOpen={showGuardarEventoModal}
 				onClose={() => {
-					setShowAgregarEventoModal(false)
+					setShowGuardarEventoModal(false)
 					setDefaultEmployee(null)
+					setEventoAEditar(null)
 				}}
-				onAgregar={handleAgregarEvento}
+				onAgregar={onAgregarEvento}
+				onEditar={onEditarEvento}
 				horas={horas}
 				empleados={empleadosSeleccionados}
 				licenciasPermisos={licenciasPermisos}
 				defaultEmpleado={defaultEmployee}
+				eventoAEditar={eventoAEditar}
 			/>
 		</section>
 	)

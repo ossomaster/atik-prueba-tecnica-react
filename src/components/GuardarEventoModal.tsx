@@ -12,26 +12,30 @@ interface Props {
 	isOpen: boolean
 	onClose: () => void
 	onAgregar: (evento: TEvento) => void
+	onEditar: (evento: TEvento) => void
 	horas: THora[]
 	empleados: TEmpleado[]
 	licenciasPermisos: TLicenciaPermiso[]
 	defaultEmpleado?: TEmpleado | null
+	eventoAEditar?: TEvento | null
 }
 
-export function AgregarEventoModal({
+export function GuardarEventoModal({
 	isOpen,
 	onClose,
 	onAgregar,
+	onEditar,
 	horas,
 	empleados,
 	licenciasPermisos,
 	defaultEmpleado = null,
+	eventoAEditar = null,
 }: Props) {
-	const [empleadoId, setEmpleadoId] = useState(defaultEmpleado?.id || "")
-	const [licenciaPermisoId, setLicenciaPermisoId] = useState("")
-	const [nombre, setNombre] = useState("")
-	const [horaInicio, setHoraInicio] = useState(horas[0]?.hora)
-	const [horaFin, setHoraFin] = useState(horas[1]?.hora)
+	const [empleadoId, setEmpleadoId] = useState(eventoAEditar?.empleado.id || defaultEmpleado?.id || "")
+	const [licenciaPermisoId, setLicenciaPermisoId] = useState(eventoAEditar?.licenciaPermiso?.id || "")
+	const [nombre, setNombre] = useState(eventoAEditar?.nombre || "")
+	const [horaInicio, setHoraInicio] = useState(eventoAEditar?.hora_inicio || horas[0]?.hora)
+	const [horaFin, setHoraFin] = useState(eventoAEditar?.hora_fin || horas[1]?.hora)
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -53,7 +57,7 @@ export function AgregarEventoModal({
 		}
 
 		const nextEvento: TEvento = {
-			id: crypto.randomUUID(),
+			id: eventoAEditar?.id || crypto.randomUUID(),
 			empleado: empleados.find((empleado) => empleado.id === empleadoId)!,
 			hora_inicio: horaInicio,
 			hora_fin: horaFin,
@@ -61,28 +65,40 @@ export function AgregarEventoModal({
 			licenciaPermiso: licenciasPermisos.find((licenciaPermiso) => licenciaPermiso.id === licenciaPermisoId)!,
 		}
 
-		onAgregar(nextEvento)
+		if (eventoAEditar) {
+			onEditar(nextEvento)
+		} else {
+			onAgregar(nextEvento)
+		}
 
-		setEmpleadoId("")
-		setLicenciaPermisoId("")
-		setNombre("")
-		setHoraInicio(horas[0].hora)
-		setHoraFin(horas[1].hora)
+		if (!eventoAEditar) {
+			setEmpleadoId("")
+			setLicenciaPermisoId("")
+			setNombre("")
+			setHoraInicio(horas[0].hora)
+			setHoraFin(horas[1].hora)
+		}
 
 		onClose()
 	}
 
 	useEffect(() => {
-		if (defaultEmpleado) {
+		if (eventoAEditar) {
+			setEmpleadoId(eventoAEditar.empleado.id)
+			setLicenciaPermisoId(eventoAEditar.licenciaPermiso?.id || "")
+			setNombre(eventoAEditar.nombre)
+			setHoraInicio(eventoAEditar.hora_inicio)
+			setHoraFin(eventoAEditar.hora_fin)
+		} else if (defaultEmpleado) {
 			setEmpleadoId(defaultEmpleado.id)
 		}
-	}, [defaultEmpleado])
+	}, [eventoAEditar, defaultEmpleado])
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-sm">
 				<DialogHeader>
-					<DialogTitle>Agregar Evento</DialogTitle>
+					<DialogTitle>{eventoAEditar ? "Editar Evento" : "Agregar Evento"}</DialogTitle>
 				</DialogHeader>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="space-y-2">
@@ -171,7 +187,7 @@ export function AgregarEventoModal({
 						<Button type="button" variant="outline" onClick={onClose}>
 							Cancelar
 						</Button>
-						<Button type="submit">Agregar Evento</Button>
+						<Button type="submit">{eventoAEditar ? "Guardar Cambios" : "Agregar Evento"}</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>

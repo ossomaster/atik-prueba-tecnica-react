@@ -24,6 +24,10 @@ function App() {
 		setEventos((prev) => [...prev, evento])
 	}
 
+	const handleEditarEvento = (evento: TEvento) => {
+		setEventos((prev) => prev.map((prevEvento) => (prevEvento.id === evento.id ? evento : prevEvento)))
+	}
+
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event
 
@@ -85,6 +89,7 @@ function App() {
 								turnos={TURNOS}
 								estados={ESTADOS}
 								onAgregarEvento={handleAgregarEvento}
+								onEditarEvento={handleEditarEvento}
 							/>
 						</DndContext>
 					</div>

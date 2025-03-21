@@ -9,11 +9,13 @@ export default function EventoBar({
 	horas,
 	index,
 	totalEventos,
+	onEdit,
 }: {
 	evento: TEvento
 	horas: THora[]
 	index: number
 	totalEventos: number
+	onEdit: (evento: TEvento) => void
 }) {
 	const startIndex = horas.findIndex((slot) => slot.hora === evento.hora_inicio)
 	const endIndex = horas.findIndex((slot) => slot.hora === evento.hora_fin)
@@ -48,6 +50,7 @@ export default function EventoBar({
 				"absolute left-0 rounded shadow-md cursor-pointer flex items-center",
 				"opacity-90 hover:opacity-100 transition-opacity"
 			)}
+			onClick={() => onEdit(evento)}
 		>
 			<button
 				className="flex-shrink-0 flex items-center justify-center size-6 p-1 cursor-move"
