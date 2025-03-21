@@ -19,6 +19,7 @@ interface Props {
 	estados: TEstado[]
 	onAgregarEvento: (evento: TEvento) => void
 	onEditarEvento: (evento: TEvento) => void
+	onEliminarEvento: (evento: TEvento) => void
 }
 
 export function Horario({
@@ -30,21 +31,26 @@ export function Horario({
 	estados,
 	onAgregarEvento,
 	onEditarEvento,
+	onEliminarEvento,
 }: Props) {
 	const [showGuardarEventoModal, setShowGuardarEventoModal] = useState(false)
-	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
-	const [eventoAEditar, setEventoAEditar] = useState<TEvento | null>(null) // New state
+	const [defaultEmpleado, setDefaultEmpleado] = useState<TEmpleado | null>(null)
+	const [eventoAEditar, setEventoAEditar] = useState<TEvento | null>(null)
 
 	const handleContextMenu = (e: React.MouseEvent, employee: TEmpleado) => {
 		e.preventDefault()
-		setDefaultEmployee(employee)
+		setDefaultEmpleado(employee)
 		setEventoAEditar(null)
 		setShowGuardarEventoModal(true)
 	}
 
-	const handleEditEvento = (evento: TEvento) => {
+	const handleEditarEvento = (evento: TEvento) => {
 		setEventoAEditar(evento)
 		setShowGuardarEventoModal(true)
+	}
+
+	const handleEliminarEvento = (evento: TEvento) => {
+		onEliminarEvento(evento)
 	}
 
 	return (
@@ -93,7 +99,8 @@ export function Horario({
 											eventos={eventos}
 											horas={horas}
 											handleContextMenu={handleContextMenu}
-											handleEditEvento={handleEditEvento}
+											handleEditarEvento={handleEditarEvento}
+											handleEliminarEvento={handleEliminarEvento}
 										/>
 									))}
 								</TableRow>
@@ -113,7 +120,7 @@ export function Horario({
 					isOpen={showGuardarEventoModal}
 					onClose={() => {
 						setShowGuardarEventoModal(false)
-						setDefaultEmployee(null)
+						setDefaultEmpleado(null)
 						setEventoAEditar(null)
 					}}
 					onAgregar={onAgregarEvento}
@@ -121,7 +128,7 @@ export function Horario({
 					horas={horas}
 					empleados={empleadosSeleccionados}
 					licenciasPermisos={licenciasPermisos}
-					defaultEmpleado={defaultEmployee}
+					defaultEmpleado={defaultEmpleado}
 					eventoAEditar={eventoAEditar}
 				/>
 			)}

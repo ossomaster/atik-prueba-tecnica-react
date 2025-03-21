@@ -10,12 +10,21 @@ type Props = {
 	eventos: TEvento[]
 	horas: THora[]
 	handleContextMenu: (e: React.MouseEvent, empleado: TEmpleado) => void
-	handleEditEvento: (evento: TEvento) => void
+	handleEditarEvento: (evento: TEvento) => void
+	handleEliminarEvento: (evento: TEvento) => void
 }
 
 const CELL_HEIGHT = 50
 
-const EmpleadoHoraCell = ({ empleado, horaItem, eventos, horas, handleContextMenu, handleEditEvento }: Props) => {
+const EmpleadoHoraCell = ({
+	empleado,
+	horaItem,
+	eventos,
+	horas,
+	handleContextMenu,
+	handleEditarEvento,
+	handleEliminarEvento,
+}: Props) => {
 	const eventosFiltrados = useMemo(() => {
 		return eventos.filter((evento) => evento.empleado.id === empleado.id && evento.hora_inicio === horaItem.hora)
 	}, [eventos, empleado.id, horaItem.hora])
@@ -43,7 +52,8 @@ const EmpleadoHoraCell = ({ empleado, horaItem, eventos, horas, handleContextMen
 										eventoTotal.empleado.id === empleado.id && eventoTotal.hora_inicio === horaItem.hora
 								).length
 							}
-							onEdit={handleEditEvento}
+							onEditar={handleEditarEvento}
+							onEliminar={handleEliminarEvento}
 						/>
 					))}
 				</div>
