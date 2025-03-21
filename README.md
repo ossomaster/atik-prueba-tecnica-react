@@ -2,6 +2,8 @@
 
 Esta aplicación web permite la creación, edición y eliminación de eventos organizados por horarios para cada empleado seleccionado. Los eventos pueden moverse entre casillas del mismo empleado o entre filas de diferentes empleados mediante la funcionalidad de arrastrar y soltar (drag-and-drop).
 
+Ingrese a la aplicación [aquí](https://ossomaster.github.io/atik-prueba-tecnica-react/).
+
 ## Tecnologías Utilizadas
 
 -   **Vite**: Herramienta de construcción rápida para aplicaciones web modernas.
