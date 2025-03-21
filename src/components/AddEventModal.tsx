@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Employee, TimeSlot } from "@/types"
+import { TEmpleado, THora } from "@/types"
 
 interface AddEventModalProps {
 	isOpen: boolean
 	onClose: () => void
 	onAdd: (employeeId: string, title: string, startTime: string, endTime: string) => void
-	timeSlots: TimeSlot[]
-	employees: Employee[]
+	timeSlots: THora[]
+	employees: TEmpleado[]
 }
 
 export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: AddEventModalProps) {
 	const [title, setTitle] = useState("")
-	const [startTime, setStartTime] = useState(timeSlots[0]?.time)
-	const [endTime, setEndTime] = useState(timeSlots[1]?.time)
+	const [startTime, setStartTime] = useState(timeSlots[0]?.hora)
+	const [endTime, setEndTime] = useState(timeSlots[1]?.hora)
 	const [selectedEmployeeId, setSelectedEmployeeId] = useState("")
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -45,7 +45,7 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 							<SelectContent>
 								{employees.map((employee) => (
 									<SelectItem key={employee.id} value={employee.id}>
-										{employee.name} - {employee.area}
+										{employee.nombre} - {employee.area}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -70,8 +70,8 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 								</SelectTrigger>
 								<SelectContent>
 									{timeSlots.map((slot) => (
-										<SelectItem key={slot.time} value={slot.time}>
-											{slot.label}
+										<SelectItem key={slot.hora} value={slot.hora}>
+											{slot.etiqueta}
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -85,10 +85,10 @@ export function AddEventModal({ isOpen, onClose, onAdd, timeSlots, employees }: 
 								</SelectTrigger>
 								<SelectContent>
 									{timeSlots
-										.filter((slot) => slot.time > startTime)
+										.filter((slot) => slot.hora > startTime)
 										.map((slot) => (
-											<SelectItem key={slot.time} value={slot.time}>
-												{slot.label}
+											<SelectItem key={slot.hora} value={slot.hora}>
+												{slot.etiqueta}
 											</SelectItem>
 										))}
 								</SelectContent>

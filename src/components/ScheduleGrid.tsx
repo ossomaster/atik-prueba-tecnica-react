@@ -1,15 +1,15 @@
 import { useState } from "react"
-import { Employee, ScheduleEvent, TimeSlot } from "@/types"
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { AddEventModal } from "./AddEventModal"
+import { TEmpleado, TEvento, THora } from "@/types"
 
 interface ScheduleGridProps {
-	selectedEmployees: Employee[]
-	events: ScheduleEvent[]
-	timeSlots: TimeSlot[]
+	selectedEmployees: TEmpleado[]
+	events: TEvento[]
+	timeSlots: THora[]
 	onAddEvent: (employeeId: string, startTime: string, endTime: string, title: string) => void
 	onEventDrop: (eventId: string, newEmployeeId: string) => void
 }
@@ -40,8 +40,8 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent,
 						<tr className="bg-gray-50">
 							<th className="p-3 border-b border-r min-w-[200px] text-left">Employee</th>
 							{timeSlots.map((slot) => (
-								<th key={slot.time} className="p-3 border-b border-r min-w-[100px] text-center">
-									{slot.label}
+								<th key={slot.hora} className="p-3 border-b border-r min-w-[100px] text-center">
+									{slot.etiqueta}
 								</th>
 							))}
 						</tr>
@@ -51,21 +51,21 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent,
 							<tr key={employee.id}>
 								<td className="p-3 border-b border-r">
 									<div>
-										<p className="font-medium">{employee.name}</p>
+										<p className="font-medium">{employee.nombre}</p>
 										<p className="text-sm text-gray-500">{employee.area}</p>
 									</div>
 								</td>
 								{timeSlots.map((slot, slotIndex) => (
 									<td
-										key={`${employee.id}-${slot.time}`}
+										key={`${employee.id}-${slot.hora}`}
 										className="p-3 border-b border-r relative h-24"
 										onContextMenu={handleContextMenu}
 									>
-										<DroppableCell employeeId={employee.id} timeSlot={slot.time}>
+										<DroppableCell employeeId={employee.id} timeSlot={slot.hora}>
 											<div className="absolute inset-0 flex flex-col gap-1">
 												{events
 													.filter(
-														(event) => event.employeeId === employee.id && event.startTime === slot.time
+														(event) => event.empleado.id === employee.id && event.hora_inicio === slot.hora
 													)
 													.map((event, eventIndex) => (
 														<EventBar
@@ -75,7 +75,7 @@ export function ScheduleGrid({ selectedEmployees, events, timeSlots, onAddEvent,
 															index={eventIndex}
 															totalEvents={
 																events.filter(
-																	(e) => e.employeeId === employee.id && e.startTime === slot.time
+																	(e) => e.empleado.id === employee.id && e.hora_inicio === slot.hora
 																).length
 															}
 														/>
@@ -122,13 +122,13 @@ function EventBar({
 	index,
 	totalEvents,
 }: {
-	event: ScheduleEvent
-	timeSlots: TimeSlot[]
+	event: TEvento
+	timeSlots: THora[]
 	index: number
 	totalEvents: number
 }) {
-	const startIndex = timeSlots.findIndex((slot) => slot.time === event.startTime)
-	const endIndex = timeSlots.findIndex((slot) => slot.time === event.endTime)
+	const startIndex = timeSlots.findIndex((slot) => slot.hora === event.hora_inicio)
+	const endIndex = timeSlots.findIndex((slot) => slot.hora === event.hora_fin)
 	const width = `${(endIndex - startIndex) * 100}%`
 	const height = `${100 / totalEvents}%`
 	const top = `${index * (100 / totalEvents)}%`
@@ -162,9 +162,9 @@ function EventBar({
 			{...attributes}
 		>
 			<div className="p-2 text-xs text-white truncate">
-				<div className="font-medium truncate">{event.title}</div>
+				<div className="font-medium truncate">{event.nombre}</div>
 				<div className="truncate">
-					{event.startTime} - {event.endTime}
+					{event.hora_inicio} - {event.hora_fin}
 				</div>
 			</div>
 		</div>
