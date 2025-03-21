@@ -2,7 +2,7 @@ import { useState } from "react"
 import { DndContext, DragEndEvent } from "@dnd-kit/core"
 import { ListaEmpleados } from "./components/ListaEmpleados"
 import { HorarioGrid } from "./components/HorarioGrid"
-import { EMPLEADOS, EVENTO_COLORES, HORAS } from "./constants"
+import { EMPLEADOS, HORAS, LICENCIAS_PERMISOS } from "./constants"
 import { TEmpleado, TEvento } from "./types"
 
 function App() {
@@ -17,16 +17,8 @@ function App() {
 		)
 	}
 
-	const handleAgregarEvento = (empleadoId: string, horaInicio: string, horaFin: string, nombre: string) => {
-		const newEvent: TEvento = {
-			id: crypto.randomUUID(),
-			empleado: EMPLEADOS.find((e) => e.id === empleadoId)!,
-			hora_inicio: horaInicio,
-			hora_fin: horaFin,
-			nombre,
-			color: EVENTO_COLORES[eventos.length % EVENTO_COLORES.length],
-		}
-		setEventos((prev) => [...prev, newEvent])
+	const handleAgregarEvento = (evento: TEvento) => {
+		setEventos((prev) => [...prev, evento])
 	}
 
 	const handleDragEnd = (event: DragEndEvent) => {
@@ -49,25 +41,26 @@ function App() {
 	}
 
 	return (
-		<DndContext onDragEnd={handleDragEnd}>
-			<div className="h-screen container mx-auto p-4">
-				<div className="grid grid-cols-[300px_1fr] grid-rows-1 gap-8 h-full">
-					<ListaEmpleados
-						empleados={EMPLEADOS}
-						empleadosSeleccionados={empleadosSeleccionados}
-						onSelect={handleSeleccionarEmpleado}
-					/>
-					<div className="min-w-0">
+		<div className="h-screen container mx-auto p-4">
+			<div className="grid grid-cols-[300px_1fr] grid-rows-1 gap-8 h-full">
+				<ListaEmpleados
+					empleados={EMPLEADOS}
+					empleadosSeleccionados={empleadosSeleccionados}
+					onSelect={handleSeleccionarEmpleado}
+				/>
+				<div className="min-w-0">
+					<DndContext onDragEnd={handleDragEnd}>
 						<HorarioGrid
 							empleadosSeleccionados={empleadosSeleccionados}
 							eventos={eventos}
 							horas={HORAS}
+							licenciasPermisos={LICENCIAS_PERMISOS}
 							onAgregarEvento={handleAgregarEvento}
 						/>
-					</div>
+					</DndContext>
 				</div>
 			</div>
-		</DndContext>
+		</div>
 	)
 }
 

@@ -4,17 +4,18 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { AgregarEventoModal } from "./AgregarEventoModal"
-import { TEmpleado, TEvento, THora } from "@/types"
+import { TEmpleado, TEvento, THora, TLicenciaPermiso } from "@/types"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 
 interface Props {
 	empleadosSeleccionados: TEmpleado[]
 	eventos: TEvento[]
 	horas: THora[]
-	onAgregarEvento: (empleadoId: string, horaInicio: string, horaFin: string, nombre: string) => void
+	licenciasPermisos: TLicenciaPermiso[]
+	onAgregarEvento: (evento: TEvento) => void
 }
 
-export function HorarioGrid({ empleadosSeleccionados, eventos, horas, onAgregarEvento }: Props) {
+export function HorarioGrid({ empleadosSeleccionados, eventos, horas, licenciasPermisos, onAgregarEvento }: Props) {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [defaultEmployee, setDefaultEmployee] = useState<TEmpleado | null>(null)
 
@@ -24,73 +25,103 @@ export function HorarioGrid({ empleadosSeleccionados, eventos, horas, onAgregarE
 		setModalOpen(true)
 	}
 
-	const handleAddEvent = (empleadoId: string, nombre: string, horaInicio: string, horaFin: string) => {
-		onAgregarEvento(empleadoId, horaInicio, horaFin, nombre)
+	const handleAgregarEvento = (evento: TEvento) => {
+		onAgregarEvento(evento)
 	}
 
 	return (
-		<div className="bg-white rounded-lg shadow-lg w-full">
-			<div className="overflow-x-auto">
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="min-w-[150px] bg-gray-100 text-xs">Empleados</TableHead>
-							{horas.map((horaItem) => (
-								<TableHead key={horaItem.hora} className="min-w-[90px] text-center text-xs border">
-									{horaItem.etiqueta}
-								</TableHead>
-							))}
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{empleadosSeleccionados.map((empleado) => (
-							<TableRow key={empleado.id}>
-								<TableCell className="bg-gray-100 text-xs">
-									<p className="font-medium">{empleado.nombre}</p>
-									<p className="text-gray-500">{empleado.area}</p>
-								</TableCell>
+		<section>
+			{/* Horario */}
+			<div className="bg-white rounded-lg shadow-lg w-full">
+				<div className="px-4 py-2 border-b text-end">
+					<Button size="sm" onClick={() => setModalOpen(true)} disabled={empleadosSeleccionados.length === 0}>
+						<Plus className="h-4 w-4 mr-2" />
+						Agregar Evento
+					</Button>
+				</div>
+				<div className="overflow-x-auto">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead className="min-w-[150px] bg-gray-100 text-xs">Empleados</TableHead>
 								{horas.map((horaItem) => (
-									<TableCell
-										key={`${empleado.id}-${horaItem.hora}`}
-										className="relative border"
-										onContextMenu={(e) => handleContextMenu(e, empleado)}
-									>
-										<DroppableCell empleadoId={empleado.id} hora={horaItem.hora}>
-											<div className="absolute inset-0 flex flex-col gap-1">
-												{eventos
-													.filter(
-														(evento) =>
-															evento.empleado.id === empleado.id && evento.hora_inicio === horaItem.hora
-													)
-													.map((evento, eventIndex) => (
-														<EventBar
-															key={evento.id}
-															evento={evento}
-															horas={horas}
-															index={eventIndex}
-															totalEventos={
-																eventos.filter(
-																	(eventoTotal) =>
-																		eventoTotal.empleado.id === empleado.id &&
-																		eventoTotal.hora_inicio === horaItem.hora
-																).length
-															}
-														/>
-													))}
-											</div>
-										</DroppableCell>
-									</TableCell>
+									<TableHead key={horaItem.hora} className="min-w-[90px] text-center text-xs border">
+										{horaItem.etiqueta}
+									</TableHead>
 								))}
 							</TableRow>
-						))}
-					</TableBody>
-				</Table>
+						</TableHeader>
+						<TableBody>
+							{empleadosSeleccionados.length === 0 && (
+								<TableRow>
+									<TableCell colSpan={horas.length + 1} className="text-gray-500">
+										Seleccione empleados para comenzar
+									</TableCell>
+								</TableRow>
+							)}
+							{empleadosSeleccionados.map((empleado) => (
+								<TableRow key={empleado.id}>
+									<TableCell className="bg-gray-100 text-xs">
+										<p className="font-medium">{empleado.nombre}</p>
+										<p className="text-gray-500">{empleado.area}</p>
+									</TableCell>
+									{horas.map((horaItem) => (
+										<TableCell
+											key={`${empleado.id}-${horaItem.hora}`}
+											className="relative border"
+											onContextMenu={(e) => handleContextMenu(e, empleado)}
+										>
+											<DroppableCell empleadoId={empleado.id} hora={horaItem.hora}>
+												<div className="absolute inset-0 flex flex-col gap-1">
+													{eventos
+														.filter(
+															(evento) =>
+																evento.empleado.id === empleado.id &&
+																evento.hora_inicio === horaItem.hora
+														)
+														.map((evento, eventIndex) => (
+															<EventBar
+																key={evento.id}
+																evento={evento}
+																horas={horas}
+																index={eventIndex}
+																totalEventos={
+																	eventos.filter(
+																		(eventoTotal) =>
+																			eventoTotal.empleado.id === empleado.id &&
+																			eventoTotal.hora_inicio === horaItem.hora
+																	).length
+																}
+															/>
+														))}
+												</div>
+											</DroppableCell>
+										</TableCell>
+									))}
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</div>
 			</div>
-			<div className="p-4 border-b text-end">
-				<Button size="sm" onClick={() => setModalOpen(true)} disabled={empleadosSeleccionados.length === 0}>
-					<Plus className="h-4 w-4 mr-2" />
-					Agregar Evento
-				</Button>
+			{/* Licencias y permisos */}
+			<div className="p-4 bg-white rounded-lg shadow-lg mt-4 flex items-center gap-2">
+				<h3 className="text-sm">Licencias y permisos:</h3>
+				<ul className="flex gap-2">
+					{licenciasPermisos.map((licenciaPermiso) => (
+						<li key={licenciaPermiso.id}>
+							<span
+								className="text-xs font-medium px-2 py-1 rounded"
+								style={{
+									color: licenciaPermiso.color,
+									backgroundColor: licenciaPermiso.color + "30",
+								}}
+							>
+								{licenciaPermiso.nombre}
+							</span>
+						</li>
+					))}
+				</ul>
 			</div>
 			<AgregarEventoModal
 				isOpen={modalOpen}
@@ -98,12 +129,13 @@ export function HorarioGrid({ empleadosSeleccionados, eventos, horas, onAgregarE
 					setModalOpen(false)
 					setDefaultEmployee(null)
 				}}
-				onAdd={handleAddEvent}
+				onAgregar={handleAgregarEvento}
 				horas={horas}
 				empleados={empleadosSeleccionados}
+				licenciasPermisos={licenciasPermisos}
 				defaultEmpleado={defaultEmployee}
 			/>
-		</div>
+		</section>
 	)
 }
 
@@ -141,13 +173,13 @@ function EventBar({ evento, horas, index, totalEventos }: { evento: TEvento; hor
 				width,
 				height,
 				top,
-				backgroundColor: evento.color + "40",
+				backgroundColor: evento.licenciaPermiso.color + "40",
 		  }
 		: {
 				width,
 				height,
 				top,
-				backgroundColor: evento.color + "30",
+				backgroundColor: evento.licenciaPermiso.color + "30",
 		  }
 
 	return (
@@ -161,7 +193,7 @@ function EventBar({ evento, horas, index, totalEventos }: { evento: TEvento; hor
 			<div
 				className="p-2 text-xs truncate"
 				style={{
-					color: evento.color,
+					color: evento.licenciaPermiso.color,
 				}}
 			>
 				<h3 className="inline-block font-medium truncate">{evento.nombre}</h3>
