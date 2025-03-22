@@ -47,6 +47,16 @@ export function GuardarEventoModal({
 			})
 			return
 		}
+
+        if (!licenciaPermisoId) {
+            toast({
+                title: "Error",
+                description: "Debe seleccionar una licencia o permiso.",
+                variant: "destructive",
+            })
+            return
+        }
+
 		if (horaFin <= horaInicio) {
 			toast({
 				title: "Error",
